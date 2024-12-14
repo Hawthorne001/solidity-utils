@@ -49,7 +49,7 @@
     "ethereumjs-util": "7.1.5",
     "ethers": "6.11.1",
     "hardhat": "2.22.2",
-    "hardhat-deploy": "0.12.2",
+    "hardhat-deploy": "0.12.4",
     "mocha-chai-jest-snapshot": "1.1.4",
     "node-fetch": "2.7.0"
   },
