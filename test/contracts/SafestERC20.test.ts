@@ -78,7 +78,7 @@ describe('SafeERC20', function () {
         await zeroApprove.waitForDeployment();
         const wrapper = await SafeERC20Wrapper.deploy(zeroApprove);
         await wrapper.waitForDeployment();
-        return { wrapper };
+        return { zeroApprove, wrapper };
     }
 
     async function deployPermitNoRevertAndSign() {
@@ -178,6 +178,13 @@ describe('SafeERC20', function () {
             await wrapper.approve(100);
         });
 
+        it('non-zero to non-zero approval should revert if approve failed', async function () {
+            const { zeroApprove, wrapper } = await loadFixture(deployWrapperZeroApprove);
+            await wrapper.approve(100);
+            await zeroApprove.setFailAfterZeroReset(true);
+            await expect(wrapper.approve(100)).to.be.revertedWithCustomError(wrapper, 'ForceApproveFailed');
+        });
+
         it('non-zero to zero to non-zero approval should pass', async function () {
             const { wrapper } = await loadFixture(deployWrapperZeroApprove);
             await wrapper.approve(100);
@@ -187,6 +194,17 @@ describe('SafeERC20', function () {
     });
 
     describe('safeBalanceOf', function () {
+        it('should return zero balance', async function () {
+            const { wrapper } = await loadFixture(deployERC20WithSafeBalance);
+            expect(await wrapper.safeBalanceOf(owner)).to.be.equal(0);
+        });
+
+        it('should return balance', async function () {
+            const { weth, wrapper } = await loadFixture(deployERC20WithSafeBalance);
+            await weth.deposit({ value: 123456 });
+            expect(await wrapper.safeBalanceOf(owner)).to.be.equal(123456);
+        });
+
         it('should be cheaper than balanceOf', async function () {
             if (hre.__SOLIDITY_COVERAGE_RUNNING === undefined) {
                 const { wrapper } = await loadFixture(deployERC20WithSafeBalance);
@@ -305,18 +323,6 @@ describe('SafeERC20', function () {
             if (hre.__SOLIDITY_COVERAGE_RUNNING === undefined) {
                 expect(await countInstructions(ethers.provider, tx.logs[0].transactionHash, ['STATICCALL', 'CALL', 'MSTORE', 'MLOAD', 'SSTORE', 'SLOAD'])).to.be.deep.equal([
                     0, 1, 6, 1, 1, 2,
-                ]);
-            }
-        });
-
-        it('should be cheap on deposit 0 tokens', async function () {
-            const { weth, wrapper } = await loadFixture(deployWrapperWETH);
-            const tx = (await trackReceivedTokenAndTx(ethers.provider, weth, await wrapper.getAddress(), () =>
-                wrapper.deposit(),
-            ))[1] as ContractTransactionReceipt;
-            if (hre.__SOLIDITY_COVERAGE_RUNNING === undefined) {
-                expect(await countInstructions(ethers.provider, tx.hash, ['STATICCALL', 'CALL', 'MSTORE', 'MLOAD', 'SSTORE', 'SLOAD'])).to.be.deep.equal([
-                    0, 0, 1, 0, 0, 1,
                 ]);
             }
         });

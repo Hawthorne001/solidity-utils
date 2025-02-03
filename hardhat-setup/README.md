@@ -8,7 +8,7 @@ This class is your go-to assistant for setting up various blockchain networks fo
 
 ## Methods:
 
-1. **`constructor(useHardhat: boolean, forkingNetworkName?: string, saveHardhatDeployments: boolean)`**: Initializes the class. It can set up a Hardhat network, including Hardhad forking, and determines whether to save deployments files.
+1. **`constructor(useHardhat: boolean, forkingNetworkName?: string, saveHardhatDeployments: boolean, forkingAccounts?: HardhatNetworkAccountsUserConfig)`**: Initializes the class. It can set up a Hardhat network, including Hardhad forking, and determines whether to save deployments files.
 
    **Constructor Parameters**
 
@@ -24,11 +24,13 @@ This class is your go-to assistant for setting up various blockchain networks fo
 
       Decides whether to save deployment files in the Hardhat environment. If `true`, saves deployment details such as contract addresses in json file, useful for tracking and referencing in subsequent testing or deployments.
 
+    - **`forkingAccounts`** (optional):
+
+      Specifies the configuration for accounts used during Hardhat network forking. If provided, it allows customization of private keys, balances, and other account properties for the forked network simulation. If omitted, default accounts will be used.
+
 2. **`register(...)`**: Registers a new network with specified parameters, such as the RPC URL, private key, and Etherscan keys.
 
 3. **`registerCustom(...)`**: Allows registering custom networks with custom parameters for Etherscan contract verifications.
-
-4. **`registerZksync(...)`**: A specialized method for registering zkSync networks with additional parameters which specified for zksync network.
 
 5. **`registerAll()`**: Registers multiple standard networks using environment variables for configuration.
 
@@ -58,7 +60,7 @@ This class is your go-to assistant for setting up various blockchain networks fo
      - `PRIVATE_KEY=f040ec294d83b8abf0803b713ebdac7e6ef8c104bd644a45d32114e7a210ce74`
      - `MAINNET_PRIVATE_KEY=f040ec294d83b8abf0803b713ebdac7e6ef8c104bd644a45d32114e7a210ce74`
 
-4. **`etherscan key`**
+3. **`etherscan key`**
 
    `<NETWORK_NAME>_ETHERSCAN_KEY` - The Etherscan's key to verify contracts for the specific network with `<NETWORK_NAME>`.
 
@@ -66,16 +68,7 @@ This class is your go-to assistant for setting up various blockchain networks fo
    - Just a string with Etherscan API KEY
    - Example: `MAINNET_ETHERSCAN_KEY=UFAPYWUQYZMR1NTER4G0BKB52WIOE6LKD9`
 
-4. **`verify url in zksync`**
-
-   `<NETWORK_NAME>_VERIFY_URL` - The veridy url to verify contracts for the specific network with `<NETWORK_NAME>`.
-
-   Format:
-   - Just a link to verification service
-   - Example: `ZKSYNC_VERIFY_URL=https://zksync2-mainnet-explorer.zksync.io/contract_verification`
-   - Default value (**only for mainnet**): `https://zksync2-mainnet-explorer.zksync.io/contract_verification`
-
-5. **`eth network in zksync`**
+4. **`eth network in zksync`**
 
    `ZKSYNC_LOCAL_ETH_NETWORK` - rpc or name of ethNetwork for local zksync node.
 

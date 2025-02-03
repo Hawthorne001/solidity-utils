@@ -4,7 +4,10 @@ import { BigNumberish, BytesLike } from 'ethers';
 import hre, { ethers } from 'hardhat';
 import chai from 'chai';
 import { jestSnapshotPlugin } from 'mocha-chai-jest-snapshot';
-chai.use(jestSnapshotPlugin());
+
+if (hre.__SOLIDITY_COVERAGE_RUNNING === undefined) {
+    chai.use(jestSnapshotPlugin());
+}
 
 describe('StringUtil', function () {
     const uint256TestValue = '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF';
@@ -100,7 +103,7 @@ describe('StringUtil', function () {
 
         it('Compare gas usage very long byte array', () => compareGasBytes(veryLongArray));
 
-        it('Compare gas usage extremly long byte array', () => compareGasBytes(extremelyLongArray));
+        it('Compare gas usage extremely long byte array', () => compareGasBytes(extremelyLongArray));
 
         it('Compare gas usage empty bytes', () => compareGasBytes(emptyBytes));
 
